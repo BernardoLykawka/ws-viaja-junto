@@ -46,6 +46,32 @@ VALUES (3, 'Jantar Tradicional de Lamen em Shibuya', 'Gastronomia', 'Shibuya Cro
 INSERT INTO catalogo_atividades (id, nome, tipo, localizacao, cidade, pais, descricao, foto_url, preco_medio, avaliacao_media, total_avaliacoes)
 VALUES (4, 'Aula de Esqui Cerro Catedral', 'Passeio', 'Cerro Catedral', 'Bariloche', 'Argentina', 'Aula prática de esqui na neve com equipamento incluso.', 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256', 300.00, 0.0, 0);
 
+-- Mais atrações e as hospedagens de cada destino. Hospedagem também é uma atividade do catálogo
+-- (tipo 'Hospedagem'); nela, preco_medio é o preço médio da diária. Os hotéis são fictícios.
+-- Sem foto_url: o frontend mostra o ícone do tipo no lugar da foto.
+INSERT INTO catalogo_atividades (id, nome, tipo, localizacao, cidade, pais, descricao, foto_url, preco_medio, avaliacao_media, total_avaliacoes) VALUES
+-- Rio de Janeiro
+(5,  'Cristo Redentor', 'Passeio', 'Corcovado', 'Rio de Janeiro', 'Brasil', 'Subida de trem pelo Corcovado até a estátua, com vista de toda a cidade.', NULL, 110.00, 0.0, 0),
+(6,  'Museu do Amanhã', 'Cultura', 'Praça Mauá', 'Rio de Janeiro', 'Brasil', 'Museu de ciências sobre o futuro do planeta, na zona portuária revitalizada.', NULL, 30.00, 0.0, 0),
+(7,  'Escadaria Selarón', 'Cultura', 'Lapa', 'Rio de Janeiro', 'Brasil', 'Os 215 degraus de azulejos coloridos que ligam a Lapa a Santa Teresa.', NULL, 0.00, 0.0, 0),
+(8,  'Hotel Vista Copacabana', 'Hospedagem', 'Avenida Atlântica, Copacabana', 'Rio de Janeiro', 'Brasil', 'Hotel de frente para a praia, com café da manhã e piscina na cobertura.', NULL, 650.00, 0.0, 0),
+(9,  'Hostel Ipanema Beach', 'Hospedagem', 'Ipanema', 'Rio de Janeiro', 'Brasil', 'Quartos compartilhados e privativos a duas quadras da praia de Ipanema.', NULL, 140.00, 0.0, 0),
+-- Paris
+(10, 'Museu do Louvre', 'Cultura', '1º arrondissement', 'Paris', 'França', 'O maior museu de arte do mundo, casa da Mona Lisa.', NULL, 120.00, 0.0, 0),
+(11, 'Cruzeiro no Rio Sena', 'Passeio', 'Port de la Bourdonnais', 'Paris', 'França', 'Passeio de barco de uma hora passando pelos principais monumentos.', NULL, 90.00, 0.0, 0),
+(12, 'Hôtel Petit Marais', 'Hospedagem', 'Le Marais', 'Paris', 'França', 'Hotel boutique em prédio histórico, perto da Place des Vosges.', NULL, 980.00, 0.0, 0),
+(13, 'Auberge Montmartre', 'Hospedagem', 'Montmartre', 'Paris', 'França', 'Albergue simples e animado aos pés da Sacré-Cœur.', NULL, 260.00, 0.0, 0),
+-- Tóquio
+(14, 'Templo Senso-ji', 'Cultura', 'Asakusa', 'Tóquio', 'Japão', 'O templo budista mais antigo de Tóquio e a rua de lojas Nakamise.', NULL, 0.00, 0.0, 0),
+(15, 'Mirante Shibuya Sky', 'Passeio', 'Shibuya', 'Tóquio', 'Japão', 'Terraço a 230 metros de altura com vista do cruzamento de Shibuya.', NULL, 110.00, 0.0, 0),
+(16, 'Hotel Sakura Shinjuku', 'Hospedagem', 'Shinjuku', 'Tóquio', 'Japão', 'Hotel compacto ao lado da estação de Shinjuku.', NULL, 720.00, 0.0, 0),
+(17, 'Cápsula Akihabara', 'Hospedagem', 'Akihabara', 'Tóquio', 'Japão', 'Hotel cápsula barato e central, perfeito para quem só vai dormir.', NULL, 210.00, 0.0, 0),
+-- Bariloche
+(18, 'Circuito Chico', 'Passeio', 'Avenida Bustillo', 'Bariloche', 'Argentina', 'Passeio pelos lagos e mirantes mais bonitos dos arredores da cidade.', NULL, 95.00, 0.0, 0),
+(19, 'Chocolates da Calle Mitre', 'Gastronomia', 'Calle Mitre', 'Bariloche', 'Argentina', 'Roteiro de degustação pelas chocolaterias tradicionais do centro.', NULL, 60.00, 0.0, 0),
+(20, 'Cabanas Nahuel Huapi', 'Hospedagem', 'Beira do Lago Nahuel Huapi', 'Bariloche', 'Argentina', 'Cabanas de madeira com lareira e vista para o lago.', NULL, 580.00, 0.0, 0),
+(21, 'Hostel Centro Bariloche', 'Hospedagem', 'Centro Cívico', 'Bariloche', 'Argentina', 'Hostel perto do Centro Cívico e das paradas de ônibus para as estações de esqui.', NULL, 170.00, 0.0, 0);
+
 
 -- 4. VIAGENS (viagens)
 INSERT INTO viagens (id, nome, descricao, data_inicio, data_fim, status, codigo_convite, criador_id, data_criacao, data_atualizacao)
@@ -99,7 +125,7 @@ VALUES (2, 2, 5000.00);
 -- ====================================================================
 ALTER TABLE users ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE destinos_catalogo ALTER COLUMN id RESTART WITH 10;
-ALTER TABLE catalogo_atividades ALTER COLUMN id RESTART WITH 10;
+ALTER TABLE catalogo_atividades ALTER COLUMN id RESTART WITH 100;
 ALTER TABLE viagens ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE membros_viagem ALTER COLUMN id RESTART WITH 10;
 ALTER TABLE destinos_viagem ALTER COLUMN id RESTART WITH 10;
