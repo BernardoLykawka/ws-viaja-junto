@@ -6,6 +6,7 @@ import com.viajajunto.api.core.dto.PagedResponse;
 import com.viajajunto.api.core.security.UserPrincipal;
 import com.viajajunto.api.modules.activity.dto.AtividadeResponseDTO;
 import com.viajajunto.api.modules.activity.dto.CreateAtividadeDTO;
+import com.viajajunto.api.modules.activity.dto.UpdateAtividadeDTO;
 import com.viajajunto.api.modules.activity.service.AtividadeViagemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,18 @@ public class AtividadeViagemController {
     ) {
         Page<AtividadeResponseDTO> atividades = atividadeViagemService.listAtividadesByViagem(tripId, principal.getId(), PagedResponse.toPageable(page, limit));
         return ResponseEntity.ok(PagedResponse.of(atividades));
+    }
+
+    @Operation(summary = "Atualizar atividade da viagem (parcial)",
+            description = "Só os campos enviados mudam. Para apagar local ou descrição, envie uma string vazia.")
+    @PatchMapping("/trips/{viagemId}/activities/{atividadeId}")
+    public ResponseEntity<AtividadeResponseDTO> updateAtividade(
+            @PathVariable Long viagemId,
+            @PathVariable Long atividadeId,
+            @Valid @RequestBody UpdateAtividadeDTO dto,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        return ResponseEntity.ok(atividadeViagemService.updateAtividade(viagemId, atividadeId, dto, principal.getId()));
     }
 
     @Operation(summary = "Remover atividade da viagem")

@@ -357,6 +357,113 @@ class TripManagementContractTest {
                 .body("code", equalTo("SCHEDULE_CONFLICT"));
     }
 
+    @Test
+    @DisplayName("PATCH /trips/{id}/destinations/{id} edita datas e nome, reordena o roteiro e valida as datas")
+    void shouldUpdateDestination() {
+        int tripId = createTrip("Viagem Editar Destino");
+        int porto = createDestination(tripId, "Porto");
+        int lisboa = createDestination(tripId, "Lisboa");
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + OWNER)
+                .body(Map.of("nome", "Lisboa e Sintra", "dataChegada", "2026-12-01", "dataSaida", "2026-12-04", "ordemVisita", 1))
+        .when()
+                .patch("/trips/{tripId}/destinations/{id}", tripId, lisboa)
+        .then()
+                .statusCode(200)
+                .body("nome", equalTo("Lisboa e Sintra"))
+                .body("pais", equalTo("Portugal"))
+                .body("ordemVisita", equalTo(1));
+
+        given()
+                .header("Authorization", "Bearer " + OWNER)
+        .when()
+                .get("/trips/{tripId}/destinations", tripId)
+        .then()
+                .statusCode(200)
+                .body("[0].id", equalTo(lisboa))
+                .body("[1].id", equalTo(porto))
+                .body("[1].ordemVisita", equalTo(2));
+
+        // saída antes da chegada já salva
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + OWNER)
+                .body(Map.of("dataSaida", "2026-11-20"))
+        .when()
+                .patch("/trips/{tripId}/destinations/{id}", tripId, lisboa)
+        .then()
+                .statusCode(400);
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + OUTSIDER)
+                .body(Map.of("nome", "Invadido"))
+        .when()
+                .patch("/trips/{tripId}/destinations/{id}", tripId, lisboa)
+        .then()
+                .statusCode(403);
+    }
+
+    @Test
+    @DisplayName("PATCH /trips/{id}/activities/{id} atualiza só os campos enviados e o orçamento acompanha")
+    void shouldUpdateActivity() {
+        int tripId = createTrip("Viagem Editar Atividade");
+        int destinationId = createDestination(tripId, "Lisboa");
+        int activityId = given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + OWNER)
+                .body(activity("Elétrico 28", "2026-12-03T10:00:00", 60, 10.0))
+        .when()
+                .post("/trips/{tripId}/destinations/{destinationId}/activities", tripId, destinationId)
+        .then()
+                .statusCode(201)
+                .extract().path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + OWNER)
+                .body(Map.of("status", "CONFIRMADA", "descricao", "Bilhete comprado", "duracaoMinutos", 90, "custoPrevisto", 15.5))
+        .when()
+                .patch("/trips/{tripId}/activities/{id}", tripId, activityId)
+        .then()
+                .statusCode(200)
+                .body("status", equalTo("CONFIRMADA"))
+                .body("descricao", equalTo("Bilhete comprado"))
+                .body("duracaoMinutos", equalTo(90))
+                .body("nome", equalTo("Elétrico 28"));
+
+        double planned = given()
+                .header("Authorization", "Bearer " + OWNER)
+        .when()
+                .get("/trips/{id}/budget", tripId)
+        .then()
+                .statusCode(200)
+                .extract().jsonPath().getDouble("totalPlanejado");
+        assertEquals(15.5, planned, 0.001);
+
+        // nome em branco: 422 com o campo
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + OWNER)
+                .body(Map.of("nome", "   "))
+        .when()
+                .patch("/trips/{tripId}/activities/{id}", tripId, activityId)
+        .then()
+                .statusCode(422);
+
+        // quem não é da viagem não edita
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + OUTSIDER)
+                .body(Map.of("nome", "Invadido"))
+        .when()
+                .patch("/trips/{tripId}/activities/{id}", tripId, activityId)
+        .then()
+                .statusCode(403);
+    }
+
     // --------------------------------------------------------------- membros
 
     @Test

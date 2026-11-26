@@ -9,6 +9,7 @@ import com.viajajunto.api.core.exception.ResourceNotFoundException;
 import com.viajajunto.api.core.security.TripSecurityService;
 import com.viajajunto.api.modules.destination.dto.CreateDestinoViagemDTO;
 import com.viajajunto.api.modules.destination.dto.DestinoViagemResponseDTO;
+import com.viajajunto.api.modules.destination.dto.UpdateDestinoViagemDTO;
 import com.viajajunto.api.modules.destination.entity.DestinoCatalogoEntity;
 import com.viajajunto.api.modules.destination.entity.DestinoViagemEntity;
 import com.viajajunto.api.modules.destination.repository.DestinoCatalogoRepository;
@@ -22,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -187,5 +189,68 @@ class DestinoViagemServiceTest {
 
         verify(destinoViagemRepository, never()).delete(any());
     }
-}
 
+    // ------------------------------------------------------------ atualização (PATCH)
+
+    private DestinoViagemEntity dest(Long id, String nome, int ordem) {
+        return DestinoViagemEntity.builder().id(id).nome(nome).ordemVisita(ordem).viagem(sampleViagem)
+                .pais("Portugal").descricao("Antiga")
+                .dataChegada(LocalDate.of(2026, 12, 1)).dataSaida(LocalDate.of(2026, 12, 5))
+                .build();
+    }
+
+    @Test
+    @DisplayName("PATCH muda só os campos enviados; string vazia apaga o texto opcional")
+    void updateDestino_ChangesOnlySentFields() {
+        DestinoViagemEntity lisboa = dest(20L, "Lisboa", 1);
+        when(destinoViagemRepository.findById(20L)).thenReturn(Optional.of(lisboa));
+        when(destinoViagemRepository.save(any(DestinoViagemEntity.class))).thenAnswer(i -> i.getArgument(0));
+
+        UpdateDestinoViagemDTO dto = UpdateDestinoViagemDTO.builder().nome(" Lisboa e Sintra ").descricao("").codigoPaisIso("prt").build();
+        DestinoViagemResponseDTO response = destinoViagemService.updateDestino(1L, 20L, dto, 10L);
+
+        assertEquals("Lisboa e Sintra", response.getNome());
+        assertNull(response.getDescricao());
+        assertEquals("PRT", response.getCodigoPaisIso());
+        assertEquals("Portugal", response.getPais());
+        assertEquals(LocalDate.of(2026, 12, 1), response.getDataChegada());
+        verify(tripSecurityService).validateUserCanEditTrip(1L, 10L);
+    }
+
+    @Test
+    @DisplayName("PATCH recusa saída antes da chegada, contando com a data já salva")
+    void updateDestino_RejectsDepartureBeforeArrival() {
+        when(destinoViagemRepository.findById(20L)).thenReturn(Optional.of(dest(20L, "Lisboa", 1)));
+
+        UpdateDestinoViagemDTO dto = UpdateDestinoViagemDTO.builder().dataSaida(LocalDate.of(2026, 11, 30)).build();
+        assertThrows(BusinessRuleException.class, () -> destinoViagemService.updateDestino(1L, 20L, dto, 10L));
+
+        verify(destinoViagemRepository, never()).save(any(DestinoViagemEntity.class));
+    }
+
+    @Test
+    @DisplayName("PATCH com ordemVisita move o destino e renumera o roteiro de 1 a N")
+    void updateDestino_ReordersItinerary() {
+        DestinoViagemEntity a = dest(1L, "A", 1);
+        DestinoViagemEntity b = dest(2L, "B", 2);
+        DestinoViagemEntity c = dest(3L, "C", 3);
+        when(destinoViagemRepository.findById(3L)).thenReturn(Optional.of(c));
+        when(destinoViagemRepository.findAllByViagemIdOrderByOrdemVisitaAsc(1L)).thenReturn(List.of(a, b, c));
+        when(destinoViagemRepository.save(any(DestinoViagemEntity.class))).thenAnswer(i -> i.getArgument(0));
+
+        destinoViagemService.updateDestino(1L, 3L, UpdateDestinoViagemDTO.builder().ordemVisita(1).build(), 10L);
+
+        assertEquals(1, c.getOrdemVisita());
+        assertEquals(2, a.getOrdemVisita());
+        assertEquals(3, b.getOrdemVisita());
+    }
+
+    @Test
+    @DisplayName("PATCH de destino de outra viagem responde ResourceNotFoundException")
+    void updateDestino_ThrowsWhenDestinationBelongsToAnotherTrip() {
+        when(destinoViagemRepository.findById(20L)).thenReturn(Optional.of(dest(20L, "Lisboa", 1)));
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                destinoViagemService.updateDestino(2L, 20L, UpdateDestinoViagemDTO.builder().nome("X").build(), 10L));
+    }
+}
