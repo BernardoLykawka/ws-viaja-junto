@@ -8,6 +8,7 @@ import com.viajajunto.api.core.exception.ScheduleConflictException;
 import com.viajajunto.api.core.security.TripSecurityService;
 import com.viajajunto.api.modules.activity.dto.AtividadeResponseDTO;
 import com.viajajunto.api.modules.activity.dto.CreateAtividadeDTO;
+import com.viajajunto.api.modules.activity.dto.UpdateAtividadeDTO;
 import com.viajajunto.api.modules.activity.entity.AtividadeViagemEntity;
 import com.viajajunto.api.modules.activity.entity.CatalogoAtividadeEntity;
 import com.viajajunto.api.modules.activity.entity.StatusAtividade;
@@ -46,26 +47,7 @@ public class AtividadeViagemService {
             throw new BusinessRuleException("O destino não pertence à viagem indicada.");
         }
 
-        if (dto.getDataHorario() != null) {
-            int durationMinutes = dto.getDuracaoMinutos() != null ? dto.getDuracaoMinutos() : 0;
-            LocalDateTime newStart = dto.getDataHorario();
-            LocalDateTime newEnd = newStart.plusMinutes(durationMinutes);
-
-            List<AtividadeViagemEntity> existingActivities = atividadeViagemRepository.findAllByViagemId(viagemId);
-            for (AtividadeViagemEntity existing : existingActivities) {
-                if (existing.getDataHorario() != null) {
-                    int existingDuration = existing.getDuracaoMinutos() != null ? existing.getDuracaoMinutos() : 0;
-                    LocalDateTime existStart = existing.getDataHorario();
-                    LocalDateTime existEnd = existStart.plusMinutes(existingDuration);
-
-                    boolean overlaps = newStart.isBefore(existEnd) && existStart.isBefore(newEnd);
-                    // atividades sem duração no mesmo instante também conflitam
-                    if (overlaps || newStart.isEqual(existStart)) {
-                        throw new ScheduleConflictException("Conflito de horário com a atividade: " + existing.getNome());
-                    }
-                }
-            }
-        }
+        validarHorarioLivre(viagemId, null, dto.getDataHorario(), dto.getDuracaoMinutos(), dto.getTipo());
 
         CatalogoAtividadeEntity catalogo = null;
         if (dto.getCatalogoAtividadeId() != null) {
@@ -128,6 +110,87 @@ public class AtividadeViagemService {
         }
 
         atividadeViagemRepository.delete(atividade);
+    }
+
+    /**
+     * Atualização parcial (PATCH): só os campos enviados mudam. Se o horário, a duração ou o tipo mudarem,
+     * o conflito de horário é checado de novo, ignorando a própria atividade.
+     */
+    @Transactional
+    public AtividadeResponseDTO updateAtividade(Long viagemId, Long atividadeId, UpdateAtividadeDTO dto, Long userId) {
+        tripSecurityService.validateUserCanEditTrip(viagemId, userId);
+
+        AtividadeViagemEntity atividade = atividadeViagemRepository.findById(atividadeId)
+                .filter(a -> a.getDestinoViagem().getViagem().getId().equals(viagemId))
+                .orElseThrow(() -> new ResourceNotFoundException("Atividade não encontrada nesta viagem com ID: " + atividadeId));
+
+        LocalDateTime inicio = dto.getDataHorario() != null ? dto.getDataHorario() : atividade.getDataHorario();
+        Integer duracao = dto.getDuracaoMinutos() != null ? dto.getDuracaoMinutos() : atividade.getDuracaoMinutos();
+        String tipo = dto.getTipo() != null ? dto.getTipo() : atividade.getTipo();
+        boolean mudouAgenda = dto.getDataHorario() != null || dto.getDuracaoMinutos() != null || dto.getTipo() != null;
+        if (mudouAgenda) {
+            validarHorarioLivre(viagemId, atividadeId, inicio, duracao, tipo);
+        }
+
+        if (dto.getNome() != null) {
+            atividade.setNome(dto.getNome().trim());
+        }
+        if (dto.getTipo() != null) {
+            atividade.setTipo(blankToNull(dto.getTipo()));
+        }
+        if (dto.getLocal() != null) {
+            atividade.setLocal(blankToNull(dto.getLocal()));
+        }
+        if (dto.getDescricao() != null) {
+            atividade.setDescricao(blankToNull(dto.getDescricao()));
+        }
+        if (dto.getDataHorario() != null) {
+            atividade.setDataHorario(dto.getDataHorario());
+        }
+        if (dto.getDuracaoMinutos() != null) {
+            atividade.setDuracaoMinutos(dto.getDuracaoMinutos());
+        }
+        if (dto.getCustoPrevisto() != null) {
+            atividade.setCustoPrevisto(dto.getCustoPrevisto());
+        }
+        if (dto.getStatus() != null) {
+            atividade.setStatus(dto.getStatus());
+        }
+
+        return mapToDTO(atividadeViagemRepository.save(atividade));
+    }
+
+    /**
+     * Duas atividades com horário não podem se sobrepor (nem começar no mesmo instante, se não têm duração).
+     * Hospedagem fica de fora dos dois lados: a estadia dura dias e as atividades acontecem durante ela.
+     * {@code ignorarId} é a própria atividade, na atualização.
+     */
+    private void validarHorarioLivre(Long viagemId, Long ignorarId, LocalDateTime inicio, Integer duracaoMinutos, String tipo) {
+        if (inicio == null || isHospedagem(tipo)) {
+            return;
+        }
+        LocalDateTime fim = inicio.plusMinutes(duracaoMinutos != null ? duracaoMinutos : 0);
+        for (AtividadeViagemEntity existente : atividadeViagemRepository.findAllByViagemId(viagemId)) {
+            if (existente.getDataHorario() == null || existente.getId().equals(ignorarId) || isHospedagem(existente.getTipo())) {
+                continue;
+            }
+            int duracaoExistente = existente.getDuracaoMinutos() != null ? existente.getDuracaoMinutos() : 0;
+            LocalDateTime inicioExistente = existente.getDataHorario();
+            LocalDateTime fimExistente = inicioExistente.plusMinutes(duracaoExistente);
+            boolean sobrepoe = inicio.isBefore(fimExistente) && inicioExistente.isBefore(fim);
+            // atividades sem duração no mesmo instante também conflitam
+            if (sobrepoe || inicio.isEqual(inicioExistente)) {
+                throw new ScheduleConflictException("Conflito de horário com a atividade: " + existente.getNome());
+            }
+        }
+    }
+
+    private static boolean isHospedagem(String tipo) {
+        return tipo != null && tipo.trim().equalsIgnoreCase("Hospedagem");
+    }
+
+    private static String blankToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 
     private AtividadeResponseDTO mapToDTO(AtividadeViagemEntity entity) {

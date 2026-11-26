@@ -6,7 +6,7 @@ Legenda: ✅ a rota e o verbo existem como no contrato · ⚠️ existe, mas dif
 
 > **Importante:** esta tabela compara **caminho e verbo**. O **formato dos dados** (nomes dos campos do JSON) ainda diverge do contrato na maioria dos recursos; veja a seção "Formato dos dados" mais abaixo.
 
-**Resumo:** 15 ✅ · 7 ⚠️ · 21 ❌
+**Resumo:** 17 ✅ · 7 ⚠️ · 19 ❌
 
 ## Usuários
 | Contrato | Situação | Observação |
@@ -36,7 +36,7 @@ Legenda: ✅ a rota e o verbo existem como no contrato · ⚠️ existe, mas dif
 | :--- | :---: | :--- |
 | `GET /trips/{tripId}/destinations` | ✅ | |
 | `POST /trips/{tripId}/destinations` | ✅ | |
-| `PATCH /trips/{tripId}/destinations/{destinationId}` | ❌ | |
+| `PATCH /trips/{tripId}/destinations/{destinationId}` | ✅ | atualização parcial; `ordemVisita` move o destino e renumera o roteiro; recusa saída antes da chegada |
 | `DELETE /trips/{tripId}/destinations/{destinationId}` | ✅ | |
 
 ## Atividades
@@ -44,7 +44,7 @@ Legenda: ✅ a rota e o verbo existem como no contrato · ⚠️ existe, mas dif
 | :--- | :---: | :--- |
 | `GET /trips/{tripId}/activities` | ✅ | paginada |
 | `POST /trips/{tripId}/activities` | ⚠️ | hoje só existe `POST /trips/{id}/destinations/{destinoId}/activities` (atividade criada dentro de um destino) |
-| `PATCH /trips/{tripId}/activities/{activityId}` | ❌ | |
+| `PATCH /trips/{tripId}/activities/{activityId}` | ✅ | atualização parcial (campo ausente não muda; string vazia apaga `local`/`descricao`); checa conflito de horário de novo, ignorando a própria atividade |
 | `DELETE /trips/{tripId}/activities/{activityId}` | ✅ | |
 
 ## Mapa e rota
@@ -114,7 +114,6 @@ Cada grupo abaixo pode virar uma issue pequena:
 
 1. **Alinhar rotas parciais:** `PATCH /trips/{id}`, membros por `userId` com convite por e-mail, `POST /trips/{id}/activities`, envelope e filtros de `GET /places`, schema `Place`.
 2. **Despesas (camada web):** `/expenses`, `/balances` e `/settlements` sobre o domínio já pronto.
-3. **Edição de destinos e atividades:** `PATCH` de ambos.
-4. **Rota entre destinos:** `GET /trips/{id}/route` (Directions API).
-5. **Comunidade:** `PATCH`/`DELETE` de reviews, topics, comments e reports.
-6. **Notificações:** lista, leitura, preferências e dispositivos.
+3. **Rota entre destinos:** `GET /trips/{id}/route` (Directions API).
+4. **Comunidade:** `PATCH`/`DELETE` de reviews, topics, comments e reports.
+5. **Notificações:** lista, leitura, preferências e dispositivos.

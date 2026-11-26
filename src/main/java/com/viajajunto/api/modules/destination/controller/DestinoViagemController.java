@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.viajajunto.api.core.security.UserPrincipal;
 import com.viajajunto.api.modules.destination.dto.CreateDestinoViagemDTO;
+import com.viajajunto.api.modules.destination.dto.UpdateDestinoViagemDTO;
 import com.viajajunto.api.modules.destination.dto.DestinoViagemResponseDTO;
 import com.viajajunto.api.modules.destination.service.DestinoViagemService;
 import jakarta.validation.Valid;
@@ -42,6 +43,19 @@ public class DestinoViagemController {
     ) {
         List<DestinoViagemResponseDTO> destinos = destinoViagemService.listDestinosByViagem(viagemId, principal.getId());
         return ResponseEntity.ok(destinos);
+    }
+
+    @Operation(summary = "Atualizar destino da viagem (parcial)",
+            description = "Só os campos enviados mudam. Para apagar um texto opcional, envie uma string vazia. "
+                    + "ordemVisita move o destino no roteiro e renumera os outros.")
+    @PatchMapping("/{destinoId}")
+    public ResponseEntity<DestinoViagemResponseDTO> updateDestino(
+            @PathVariable Long viagemId,
+            @PathVariable Long destinoId,
+            @Valid @RequestBody UpdateDestinoViagemDTO dto,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        return ResponseEntity.ok(destinoViagemService.updateDestino(viagemId, destinoId, dto, principal.getId()));
     }
 
     @Operation(summary = "Remover destino da viagem")
