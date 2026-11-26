@@ -30,7 +30,7 @@ INSERT INTO destinos_catalogo (id, nome, pais, codigo_pais_iso, cidade, estado, 
 VALUES (3, 'Tóquio', 'Japão', 'JPN', 'Tóquio', 'Kanto', 'Metrópole vibrante mesclando tecnologia futurista e tradição millenar.', 'cidade', 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf', 0.0, 0);
 
 INSERT INTO destinos_catalogo (id, nome, pais, codigo_pais_iso, cidade, estado, descricao, categoria, foto_url, avaliacao_media, total_avaliacoes) 
-VALUES (4, 'Bariloche', 'Argentina', 'ARG', 'San Carlos de Bariloche', 'Río Negro', 'Famosa por suas montanhas com neve, lagos cristalinos e chocolates.', 'natureza', 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62', 0.0, 0);
+VALUES (4, 'Bariloche', 'Argentina', 'ARG', 'San Carlos de Bariloche', 'Río Negro', 'Famosa por suas montanhas com neve, lagos cristalinos e chocolates.', 'natureza', 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Vista_panor%C3%A1mica_de_San_Carlos_de_Bariloche.jpg/960px-Vista_panor%C3%A1mica_de_San_Carlos_de_Bariloche.jpg', 0.0, 0);
 
 
 -- 3. CATÁLOGO DE ATIVIDADES (catalogo_atividades)
@@ -47,30 +47,31 @@ INSERT INTO catalogo_atividades (id, nome, tipo, localizacao, cidade, pais, desc
 VALUES (4, 'Aula de Esqui Cerro Catedral', 'Passeio', 'Cerro Catedral', 'Bariloche', 'Argentina', 'Aula prática de esqui na neve com equipamento incluso.', 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256', 300.00, 0.0, 0);
 
 -- Mais atrações e as hospedagens de cada destino. Hospedagem também é uma atividade do catálogo
--- (tipo 'Hospedagem'); nela, preco_medio é o preço médio da diária. Os hotéis são fictícios.
--- Sem foto_url: o frontend mostra o ícone do tipo no lugar da foto.
+-- (tipo 'Hospedagem'); nela, preco_medio é o preço médio da diária. Os hotéis são fictícios: as fotos deles
+-- mostram o bairro, não um hotel real. Fotos do Wikimedia Commons (CC BY, CC BY-SA, CC0 ou domínio público);
+-- autor e licença de cada uma estão na página do arquivo (commons.wikimedia.org/wiki/File:<nome do arquivo>).
 INSERT INTO catalogo_atividades (id, nome, tipo, localizacao, cidade, pais, descricao, foto_url, preco_medio, avaliacao_media, total_avaliacoes) VALUES
 -- Rio de Janeiro
-(5,  'Cristo Redentor', 'Passeio', 'Corcovado', 'Rio de Janeiro', 'Brasil', 'Subida de trem pelo Corcovado até a estátua, com vista de toda a cidade.', NULL, 110.00, 0.0, 0),
-(6,  'Museu do Amanhã', 'Cultura', 'Praça Mauá', 'Rio de Janeiro', 'Brasil', 'Museu de ciências sobre o futuro do planeta, na zona portuária revitalizada.', NULL, 30.00, 0.0, 0),
-(7,  'Escadaria Selarón', 'Cultura', 'Lapa', 'Rio de Janeiro', 'Brasil', 'Os 215 degraus de azulejos coloridos que ligam a Lapa a Santa Teresa.', NULL, 0.00, 0.0, 0),
-(8,  'Hotel Vista Copacabana', 'Hospedagem', 'Avenida Atlântica, Copacabana', 'Rio de Janeiro', 'Brasil', 'Hotel de frente para a praia, com café da manhã e piscina na cobertura.', NULL, 650.00, 0.0, 0),
-(9,  'Hostel Ipanema Beach', 'Hospedagem', 'Ipanema', 'Rio de Janeiro', 'Brasil', 'Quartos compartilhados e privativos a duas quadras da praia de Ipanema.', NULL, 140.00, 0.0, 0),
+(5,  'Cristo Redentor', 'Passeio', 'Corcovado', 'Rio de Janeiro', 'Brasil', 'Subida de trem pelo Corcovado até a estátua, com vista de toda a cidade.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Christ_the_Redeemer_-_Cristo_Redentor.jpg/960px-Christ_the_Redeemer_-_Cristo_Redentor.jpg', 110.00, 0.0, 0),
+(6,  'Museu do Amanhã', 'Cultura', 'Praça Mauá', 'Rio de Janeiro', 'Brasil', 'Museu de ciências sobre o futuro do planeta, na zona portuária revitalizada.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Museu_do_Amanh%C3%A3_rio.jpg/960px-Museu_do_Amanh%C3%A3_rio.jpg', 30.00, 0.0, 0),
+(7,  'Escadaria Selarón', 'Cultura', 'Lapa', 'Rio de Janeiro', 'Brasil', 'Os 215 degraus de azulejos coloridos que ligam a Lapa a Santa Teresa.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Escadaria_Selar%C3%B3n_-_Rio_de_Janeiro_-_20240417062601.jpg/960px-Escadaria_Selar%C3%B3n_-_Rio_de_Janeiro_-_20240417062601.jpg', 0.00, 0.0, 0),
+(8,  'Hotel Vista Copacabana', 'Hospedagem', 'Avenida Atlântica, Copacabana', 'Rio de Janeiro', 'Brasil', 'Hotel de frente para a praia, com café da manhã e piscina na cobertura.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Avenida_Atl%C3%A2ntica_em_Copacabana.jpg/960px-Avenida_Atl%C3%A2ntica_em_Copacabana.jpg', 650.00, 0.0, 0),
+(9,  'Hostel Ipanema Beach', 'Hospedagem', 'Ipanema', 'Rio de Janeiro', 'Brasil', 'Quartos compartilhados e privativos a duas quadras da praia de Ipanema.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Rua_Vinicius_de_Moraes%2C_Ipanema%2C_Rio_de_Janeiro.jpg/960px-Rua_Vinicius_de_Moraes%2C_Ipanema%2C_Rio_de_Janeiro.jpg', 140.00, 0.0, 0),
 -- Paris
-(10, 'Museu do Louvre', 'Cultura', '1º arrondissement', 'Paris', 'França', 'O maior museu de arte do mundo, casa da Mona Lisa.', NULL, 120.00, 0.0, 0),
-(11, 'Cruzeiro no Rio Sena', 'Passeio', 'Port de la Bourdonnais', 'Paris', 'França', 'Passeio de barco de uma hora passando pelos principais monumentos.', NULL, 90.00, 0.0, 0),
-(12, 'Hôtel Petit Marais', 'Hospedagem', 'Le Marais', 'Paris', 'França', 'Hotel boutique em prédio histórico, perto da Place des Vosges.', NULL, 980.00, 0.0, 0),
-(13, 'Auberge Montmartre', 'Hospedagem', 'Montmartre', 'Paris', 'França', 'Albergue simples e animado aos pés da Sacré-Cœur.', NULL, 260.00, 0.0, 0),
+(10, 'Museu do Louvre', 'Cultura', '1º arrondissement', 'Paris', 'França', 'O maior museu de arte do mundo, casa da Mona Lisa.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Louvre_Museum_Wikimedia_Commons.jpg/960px-Louvre_Museum_Wikimedia_Commons.jpg', 120.00, 0.0, 0),
+(11, 'Cruzeiro no Rio Sena', 'Passeio', 'Port de la Bourdonnais', 'Paris', 'França', 'Passeio de barco de uma hora passando pelos principais monumentos.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Bateau-mouche_et_Tour_Eiffel_%2832635502162%29.jpg/960px-Bateau-mouche_et_Tour_Eiffel_%2832635502162%29.jpg', 90.00, 0.0, 0),
+(12, 'Hôtel Petit Marais', 'Hospedagem', 'Le Marais', 'Paris', 'França', 'Hotel boutique em prédio histórico, perto da Place des Vosges.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Place_des_Vosges%2C_Paris%2C_porte_du_n%C2%B0_15.JPG/960px-Place_des_Vosges%2C_Paris%2C_porte_du_n%C2%B0_15.JPG', 980.00, 0.0, 0),
+(13, 'Auberge Montmartre', 'Hospedagem', 'Montmartre', 'Paris', 'França', 'Albergue simples e animado aos pés da Sacré-Cœur.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/L%27escalier_de_droite_menant_%C3%A0_la_Basilique_de_Montmartre_-_GT_03_-_2024.jpg/960px-L%27escalier_de_droite_menant_%C3%A0_la_Basilique_de_Montmartre_-_GT_03_-_2024.jpg', 260.00, 0.0, 0),
 -- Tóquio
-(14, 'Templo Senso-ji', 'Cultura', 'Asakusa', 'Tóquio', 'Japão', 'O templo budista mais antigo de Tóquio e a rua de lojas Nakamise.', NULL, 0.00, 0.0, 0),
-(15, 'Mirante Shibuya Sky', 'Passeio', 'Shibuya', 'Tóquio', 'Japão', 'Terraço a 230 metros de altura com vista do cruzamento de Shibuya.', NULL, 110.00, 0.0, 0),
-(16, 'Hotel Sakura Shinjuku', 'Hospedagem', 'Shinjuku', 'Tóquio', 'Japão', 'Hotel compacto ao lado da estação de Shinjuku.', NULL, 720.00, 0.0, 0),
-(17, 'Cápsula Akihabara', 'Hospedagem', 'Akihabara', 'Tóquio', 'Japão', 'Hotel cápsula barato e central, perfeito para quem só vai dormir.', NULL, 210.00, 0.0, 0),
+(14, 'Templo Senso-ji', 'Cultura', 'Asakusa', 'Tóquio', 'Japão', 'O templo budista mais antigo de Tóquio e a rua de lojas Nakamise.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/20181123_Sens%C5%8D-ji-3.jpg/960px-20181123_Sens%C5%8D-ji-3.jpg', 0.00, 0.0, 0),
+(15, 'Mirante Shibuya Sky', 'Passeio', 'Shibuya', 'Tóquio', 'Japão', 'Terraço a 230 metros de altura com vista do cruzamento de Shibuya.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Shibuya_Sky_Observation_Deck_%2853415730632%29.jpg/960px-Shibuya_Sky_Observation_Deck_%2853415730632%29.jpg', 110.00, 0.0, 0),
+(16, 'Hotel Sakura Shinjuku', 'Hospedagem', 'Shinjuku', 'Tóquio', 'Japão', 'Hotel compacto ao lado da estação de Shinjuku.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Buildings_with_colorful_neon_street_signs_at_blue_hour%2C_Shinjuku%2C_Tokyo.jpg/960px-Buildings_with_colorful_neon_street_signs_at_blue_hour%2C_Shinjuku%2C_Tokyo.jpg', 720.00, 0.0, 0),
+(17, 'Cápsula Akihabara', 'Hospedagem', 'Akihabara', 'Tóquio', 'Japão', 'Hotel cápsula barato e central, perfeito para quem só vai dormir.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Akihabara_Night.jpg/960px-Akihabara_Night.jpg', 210.00, 0.0, 0),
 -- Bariloche
-(18, 'Circuito Chico', 'Passeio', 'Avenida Bustillo', 'Bariloche', 'Argentina', 'Passeio pelos lagos e mirantes mais bonitos dos arredores da cidade.', NULL, 95.00, 0.0, 0),
-(19, 'Chocolates da Calle Mitre', 'Gastronomia', 'Calle Mitre', 'Bariloche', 'Argentina', 'Roteiro de degustação pelas chocolaterias tradicionais do centro.', NULL, 60.00, 0.0, 0),
-(20, 'Cabanas Nahuel Huapi', 'Hospedagem', 'Beira do Lago Nahuel Huapi', 'Bariloche', 'Argentina', 'Cabanas de madeira com lareira e vista para o lago.', NULL, 580.00, 0.0, 0),
-(21, 'Hostel Centro Bariloche', 'Hospedagem', 'Centro Cívico', 'Bariloche', 'Argentina', 'Hostel perto do Centro Cívico e das paradas de ônibus para as estações de esqui.', NULL, 170.00, 0.0, 0);
+(18, 'Circuito Chico', 'Passeio', 'Avenida Bustillo', 'Bariloche', 'Argentina', 'Passeio pelos lagos e mirantes mais bonitos dos arredores da cidade.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Argentina_Bariloche_CircuitoChico.jpg/960px-Argentina_Bariloche_CircuitoChico.jpg', 95.00, 0.0, 0),
+(19, 'Chocolates da Calle Mitre', 'Gastronomia', 'Calle Mitre', 'Bariloche', 'Argentina', 'Roteiro de degustação pelas chocolaterias tradicionais do centro.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/C._Mitre%2C_Bariloche.jpg/960px-C._Mitre%2C_Bariloche.jpg', 60.00, 0.0, 0),
+(20, 'Cabanas Nahuel Huapi', 'Hospedagem', 'Beira do Lago Nahuel Huapi', 'Bariloche', 'Argentina', 'Cabanas de madeira com lareira e vista para o lago.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/La_vida_tranquila_%2825922837736%29.jpg/960px-La_vida_tranquila_%2825922837736%29.jpg', 580.00, 0.0, 0),
+(21, 'Hostel Centro Bariloche', 'Hospedagem', 'Centro Cívico', 'Bariloche', 'Argentina', 'Hostel perto do Centro Cívico e das paradas de ônibus para as estações de esqui.', 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Centro_c%C3%ADvico_de_San_Carlos_de_Bariloche_en_2022.jpg/960px-Centro_c%C3%ADvico_de_San_Carlos_de_Bariloche_en_2022.jpg', 170.00, 0.0, 0);
 
 
 -- 4. VIAGENS (viagens)
